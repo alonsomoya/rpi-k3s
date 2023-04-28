@@ -1,0 +1,11 @@
+---
+
+all:
+  hosts:
+    master:
+    worker:   
+  children:
+    nodes:
+      hosts:
+        master:
+        worker:

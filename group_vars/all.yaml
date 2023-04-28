@@ -1,0 +1,11 @@
+---
+# common variables for all
+
+ansible_connection: local
+ansible_become: yes
+ansible_become_method: sudo
+
+dns_server: '192.168.2.1,192.168.1.1'
+dns_search_suffix: 'int.layer8sys.com'
+
+time_zone: Europe/Berlin

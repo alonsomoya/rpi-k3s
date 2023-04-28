@@ -1,0 +1,47 @@
+#cloud-config
+
+# This is the user-data configuration file for cloud-init. By default this sets
+# up an initial user called "ubuntu" with password "ubuntu", which must be
+# changed at first login. However, many additional actions can be initiated on
+# first boot from this file. The cloud-init documentation has more details:
+#
+# https://cloudinit.readthedocs.io/
+#
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: $HOST_NAME
+
+# Enable password authentication with the SSH daemon
+ssh_pwauth: true
+
+## Add users and groups to the system, and import keys with the ssh-import-id
+users:
+- name: ansible
+  primary-group: users
+  shell: /bin/bash
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  passwd: $PASSWORD
+  groups: users,adm,dialout,audio,plugdev,netdev,video
+  lock_passwd: true
+  ssh-authorized-keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQClMwAW4PRapA2D0dD91Cpy72UVE1NRMGnrjtlV+Gv59Wgqo/XHjvDZJbX3XI0WqqzIr3Z/0EsAu0KnSgfQ8/phkA0AbZw3cOZfVuNiO5uS9Hv0pzmuutnVjPnZw1YyePFPldRbC9kT86cCI8LYtI9xd1nJtpGCpL4fDfh4MPyJcTmeYH9U9N8DAvb3pCrLAFzVFRYV9ZEwrOJOGI3tuwKVPrSj+LdJjOqGCu9ZB+4nKRDmasQ8OKPsYU8RvlaiNh/slzTPkuByTTwJ4WkhOU+ScKlbqfjI2x4HTLvN5M1raTnHoXU6reCInlPsfhcvDRDqcBlIffGh8uAfYA1+qiRDhJqDquWB2kF3euPswxfPtHS+xfWYdms8TXsoFv6oqDNOPZdbuoTrfQq0EEUJ73e34VHjCsciKsmcQSqgEvkbg0VcVa3XuFy/WVOMF6l8MWCdAGTF3NebK/IQqoQCMN2X/GS+jMUcNmM4zdhonqu515+0yFjlfxXkJWfbB/7hZec= jose@alonsomoya.com
+
+## Update apt database and upgrade packages on first boot
+package_update: true
+package_upgrade: true
+
+## Install additional packages on first boot
+packages:
+- avahi-daemon
+- ansible
+
+## Run arbitrary commands at rc.local like time
+runcmd:
+  # Pickup the hostname changes
+  - 'sudo systemctl restart avahi-daemon'
+  # Run Ansible play
+  - "sudo ansible-pull -U https://github.com/alonsomoya/rpi-k3s.git -i inventory.yml playbook.yaml --limit $HOST_NAME > /var/log/ansible-provision.run 2>&1"
+
+powerstate:
+  delay: "+5"
+  mode: reboot
