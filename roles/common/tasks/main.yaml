@@ -4,13 +4,24 @@
   timezone:
     name: "{{time_zone}}"
     
-- name: 'Template out Netplan YAML to configure networking'
+- name: 'Template out DHCPCD YAML to configure networking'
   template: 
-    src: ./templates/99_config.yaml.tpl
-    dest: /etc/netplan/99_config.yaml
+    src: ./templates/dhcpcd.conf.tpl
+    dest: /etc/dhcpcd.conf
+  become: yes
+  become_method: sudo
     
-- name: 'Applying Netplan Configuration'
-  command: netplan apply
+- name: Reload (stop) service dhcpcd.service
+  ansible.builtin.service:
+    name: dhcpcd.service
+    state: stopped
+  become: yes
+  become_method: sudo
+  
+- name: Reload (start) service dhcpcd.service
+  ansible.builtin.service:
+    name: dhcpcd.service
+    state: started
   become: yes
   become_method: sudo
 

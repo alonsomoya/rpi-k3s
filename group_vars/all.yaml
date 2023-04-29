@@ -1,9 +1,11 @@
 ---
 # common variables for all
-
-ansible_connection: local
-ansible_become: yes
-ansible_become_method: sudo
+ansible_user: pi
+k3s_version: v1.22.3+k3s1
+systemd_dir: /etc/systemd/system
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
+extra_server_args: ""
+extra_agent_args: ""
 
 dns_server: '192.168.2.1,192.168.1.1'
 dns_search_suffix: 'int.layer8sys.com'

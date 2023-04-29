@@ -35,13 +35,6 @@ packages:
 - avahi-daemon
 - ansible
 
-## Run arbitrary commands at rc.local like time
-runcmd:
-  # Pickup the hostname changes
-  - 'sudo systemctl restart avahi-daemon'
-  # Run Ansible play
-  - "sudo ansible-pull -U https://github.com/alonsomoya/rpi-k3s.git -i inventory.yml playbook.yaml --limit $HOST_NAME > /var/log/ansible-provision.run 2>&1"
-
 powerstate:
   delay: "+5"
   mode: reboot

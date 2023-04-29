@@ -1,3 +1,21 @@
 - hosts: all
   roles:
     - common
+
+- hosts: k3s_cluster
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: prereq
+    - role: download
+    - role: raspberrypi
+
+- hosts: master
+  become: yes
+  roles:
+    - role: k3s/master
+
+- hosts: worker
+  become: yes
+  roles:
+    - role: k3s/worker
